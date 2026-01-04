@@ -17,7 +17,6 @@ app.get("/health", (req, res) => {
   let kh = "";
   res.json({ msg: k });
 });
-
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/event", eventRoute);
 app.use("/api/v1/ticket", ticketRoute);

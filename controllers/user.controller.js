@@ -93,6 +93,7 @@ export const login = async (req, res, next) => {
       username: isExists.username,
       email: isExists.email,
     });
+    console.log("token:", token);
     return new APIResponse(
       true,
       "Login Success",
@@ -111,6 +112,42 @@ export const login = async (req, res, next) => {
       "Invalid email/username or password",
       null,
       401
+    ).send(res);
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const { id } = req.user;
+    console.log("id in userpfoile is:", id);
+
+    // Fetch user profile using the user ID
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      return new APIResponse(false, "User not found", null, 404).send(res);
+    }
+
+    return new APIResponse(
+      true,
+      "User profile fetched successfully",
+      { user },
+      200
+    ).send(res);
+  } catch (err) {
+    console.error("Error fetching user profile:", err);
+    return new APIResponse(
+      false,
+      "An error occurred while fetching user profile",
+      null,
+      500
     ).send(res);
   }
 };

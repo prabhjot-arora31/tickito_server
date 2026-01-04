@@ -85,9 +85,79 @@ export const getTicket = async (req, res) => {
   );
 };
 
+// Controller: getTicketById.js
+
+export const getTicketById = async (req, res) => {
+  const userId = req.user.id; // Assuming user is authenticated and has an ID
+  const { ticketId } = req.params; // Ticket ID from the URL parameter
+  console.log(`both: ${ticketId} ${userId}`);
+  try {
+    // Fetch the ticket by ID and user ID (to ensure the ticket belongs to the user)
+    const ticket = await prisma.ticket.findFirst({
+      where: {
+        id: Number(ticketId),
+        userId: Number(userId),
+      },
+      include: {
+        event: true, // Optionally include event details
+      },
+    });
+
+    // If ticket is found
+    if (ticket) {
+      return new APIResponse(
+        true,
+        "Ticket details fetched successfully",
+        ticket,
+        200
+      ).send(res);
+    } else {
+      return new APIResponse(false, "Ticket not found", {}, 404).send(res);
+    }
+  } catch (error) {
+    console.error("Error fetching ticket:", error);
+    return new APIResponse(false, "Failed to fetch ticket", {}, 500).send(res);
+  }
+};
+
+// Controller to get all tickets for the logged-in user
+export const getAllTickets = async (req, res) => {
+  const userId = req.user.id; // Get user ID from the JWT token or session
+
+  try {
+    // Fetch all tickets associated with the user
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        userId: Number(userId),
+      },
+      include: {
+        event: true, // Optionally include event details, if needed
+      },
+    });
+
+    // Check if tickets are found
+    if (tickets.length === 0) {
+      return new APIResponse(false, "No tickets found", [], 200).send(res);
+    }
+
+    // Send the tickets data as response
+    return new APIResponse(
+      true,
+      "Tickets fetched successfully",
+      tickets,
+      200
+    ).send(res);
+  } catch (error) {
+    console.error("Error fetching tickets:", error);
+    return new APIResponse(false, "Failed to fetch tickets", [], 500).send(res);
+  }
+};
+
 export const getIsBooked = async (req, res) => {
   const userId = req.user.id;
+  console.log("inside is-booked:", userId);
   const { eventId } = req.params;
+  console.log("inside is-booked event:", eventId);
   const ticket = await prisma.ticket.findFirst({
     where: {
       AND: [
@@ -100,5 +170,6 @@ export const getIsBooked = async (req, res) => {
       ],
     },
   });
+  console.log("ticket is:", ticket);
   return new APIResponse(true, "Booking status fetched", ticket, 200).send(res);
 };

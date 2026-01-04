@@ -37,10 +37,10 @@ const eventAddRules = [
 ];
 
 eventRoute
-  .get("/get-events", protectedRoute, asyncHandler(getEvents))
+  .get("/get-events", asyncHandler(getEvents))
   .get(
     "/get-event-detail/:eventId",
-    protectedRoute,
+    // protectedRoute,
     asyncHandler(getEventDetail)
   )
   .post(

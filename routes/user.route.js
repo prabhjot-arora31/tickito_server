@@ -1,9 +1,15 @@
 import express from "express";
 const userRoute = express.Router();
 import asyncHandler from "express-async-handler";
-import { getUsers, login, register } from "../controllers/user.controller.js";
+import {
+  getUserProfile,
+  getUsers,
+  login,
+  register,
+} from "../controllers/user.controller.js";
 import { body } from "express-validator";
 import { validate } from "../services/validate.js";
+import protectedRoute from "../middleware/protected_route.js";
 const registerRules = [
   body("username")
     .notEmpty()
@@ -27,5 +33,7 @@ const registerRules = [
 ];
 userRoute
   .get("/get", asyncHandler(getUsers))
-  .post("/register", registerRules, validate, asyncHandler(register)).post('/login',validate , asyncHandler(login));
+  .get("/profile", protectedRoute, getUserProfile)
+  .post("/register", registerRules, validate, asyncHandler(register))
+  .post("/login", validate, asyncHandler(login));
 export default userRoute;

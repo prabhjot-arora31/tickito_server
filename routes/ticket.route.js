@@ -4,8 +4,10 @@ import asyncHandler from "express-async-handler";
 import { validate } from "../services/validate.js";
 import {
   bookTicket,
+  getAllTickets,
   getIsBooked,
   getTicket,
+  getTicketById,
 } from "../controllers/ticket.controller.js";
 import protectedRoute from "../middleware/protected_route.js";
 import multer from "multer";
@@ -33,6 +35,11 @@ ticketRoute
     asyncHandler(bookTicket)
   )
   .get("/get-ticket", protectedRoute, asyncHandler(getTicket))
-  .get("/is-booked/:eventId", protectedRoute, asyncHandler(getIsBooked));
-
+  .get("/is-booked/:eventId", protectedRoute, asyncHandler(getIsBooked))
+  .get("/get-tickets", protectedRoute, asyncHandler(getAllTickets))
+  .get(
+    "/get-ticket-details/:ticketId",
+    protectedRoute,
+    asyncHandler(getTicketById)
+  );
 export default ticketRoute;

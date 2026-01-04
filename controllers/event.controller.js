@@ -86,6 +86,7 @@ export const getEvents = async (req, res) => {
       poster: true,
     },
   });
+  console.log(events);
   return new APIResponse(true, "Events fetched successfully", events, 200).send(
     res
   );
@@ -93,6 +94,7 @@ export const getEvents = async (req, res) => {
 
 export const getEventDetail = async (req, res) => {
   const { eventId } = req.params;
+  console.log("id is:", eventId);
   const event = await prisma.event.findUnique({
     where: {
       id: Number(eventId),
